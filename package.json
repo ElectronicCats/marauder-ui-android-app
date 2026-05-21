@@ -19,6 +19,7 @@
     },
     "devDependencies": {
         "@capacitor/android": "^6.2.1",
+        "@capacitor/assets": "^3.0.5",
         "@capacitor/cli": "^6.2.1",
         "@capacitor/core": "^6.2.1",
         "@vitejs/plugin-vue": "^4.2.3",
