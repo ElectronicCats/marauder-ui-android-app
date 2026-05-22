@@ -6,6 +6,9 @@
       <button @click="sendCommand('stopscan')" class="btn btn-danger">Stop</button>
       <div class="flex-1"></div>
       <span class="text-sm text-zinc-500 font-mono">{{ entries.length }} networks mapped</span>
+      <span v-if="sourceFormat" class="text-xs font-mono px-1.5 py-0.5 bg-zinc-800 text-zinc-500 rounded">
+        {{ sourceFormat }} {{ sourceVersion !== 'unknown' ? sourceVersion : '' }}
+      </span>
       
       <button @click="exportCsv" :disabled="entries.length === 0"
         class="btn btn-accent" :class="{ 'opacity-50 cursor-not-allowed': entries.length === 0 }">
@@ -85,6 +88,7 @@ import { useSerialConnection } from '../utils/serialConnection'
 import { useAuth } from '../composables/useAuth'
 import { buildWardriveCsvBlob, wardriveCsvFileName, buildWardriveCsvFile } from '../utils/wardriveCsv'
 import { uploadWardriveFiles } from '../utils/platformUpload'
+import { detectMetaLine, detectColumnHeader, createParser } from '../utils/wigleParser'
 import GpsMap from './GpsMap.vue'
 
 const { sendCommand, terminalOutput } = useSerialConnection()
@@ -95,6 +99,11 @@ const csvHeader = ref('')
 const csvColumnHeader = ref('')
 const lastProcessedIndex = ref(0)
 const syncLoading = ref(false)
+
+// Parser state machine
+const sourceFormat = ref('')
+const sourceVersion = ref('')
+const activeParser = ref(null)
 
 const latestCoords = computed(() => {
   if (entries.value.length === 0) return { lat: null, lon: null }
@@ -147,28 +156,9 @@ const clearData = () => {
   csvHeader.value = ''
   csvColumnHeader.value = ''
   uploadMessage.value = ''
-}
-
-const parseWardriveRow = (plain) => {
-  const parts = plain.split(',')
-  if (parts.length < 11) return null
-
-  const mac = parts[0].trim()
-  if (!/^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$/.test(mac)) return null
-
-  return {
-    mac,
-    ssid: parts[1] || '',
-    auth: parts[2] || '',
-    firstSeen: parts[3] || '',
-    channel: parts[4] || '-',
-    rssi: parts[5] || '',
-    lat: parts[6] || '',
-    lon: parts[7] || '',
-    alt: parts[8] || '',
-    accuracy: parts[9] || '',
-    type: parts[10]?.trim() || ''
-  }
+  sourceFormat.value = ''
+  sourceVersion.value = ''
+  activeParser.value = null
 }
 
 watch(() => terminalOutput.value, (newLines) => {
@@ -184,20 +174,42 @@ watch(() => terminalOutput.value, (newLines) => {
     const plain = line.replace(/<[^>]+>/g, '').trim()
     if (!plain) return
 
-    if (plain.startsWith('WigleWifi-1.4')) {
+    // State 1 — detect metadata line (any WiGLE version)
+    const meta = detectMetaLine(plain)
+    if (meta) {
       csvHeader.value = plain
+      sourceFormat.value = meta.format
+      sourceVersion.value = meta.version
       return
     }
 
-    if (plain.startsWith('MAC,SSID,AuthMode')) {
+    // State 2 — detect column header line, build parser
+    const colResult = detectColumnHeader(plain)
+    if (colResult) {
       csvColumnHeader.value = plain
+      activeParser.value = createParser(colResult)
       return
     }
 
-    const entry = parseWardriveRow(plain)
-    if (entry) {
-      entries.value = [...entries.value, entry]
-    }
+    // State 3 — parse data rows
+    if (!activeParser.value) return
+    const canonical = activeParser.value(plain)
+    if (!canonical) return
+
+    entries.value = [...entries.value, {
+      mac:       canonical.mac,
+      ssid:      canonical.ssid,
+      auth:      canonical.security,
+      firstSeen: canonical.first_seen,
+      channel:   canonical.channel,
+      rssi:      canonical.rssi,
+      lat:       canonical.latitude,
+      lon:       canonical.longitude,
+      alt:       canonical.altitude,
+      accuracy:  canonical.accuracy,
+      type:      canonical.type,
+      _canonical: canonical,
+    }]
   })
 }, { deep: true })
 
