@@ -45,25 +45,44 @@ npx cap open android
 ```
 *(Si ya tienes tu celular conectado por USB con el modo de depuración activado, puedes correr la app directamente desde la terminal con `npx cap run android`)*.
 
-Contributions are welcome!
+## 📖 Documentación Adicional
 
-Please read the document [**Contribution manual**](https://github.com/ElectronicCats/electroniccats-cla/blob/main/electroniccats-contribution-manual.md) which will show you how to contribute your changes to the project.
+- [Marauder UI PRO](https://github.com/ElectronicCats/marauder-ui-pro)
+- [Firmware PWNterrey](https://github.com/ElectronicCats/pwnterrey-2026_Firmware)
+- [Hardware Esquematico](https://github.com/ElectronicCats/badge-pwnterrey-2026)
 
-✨ Thanks to all our [Contributors](https://github.com/ElectronicCats/Minino/graphs/contributors)! ✨
+## 🤝 Contribuciones
 
-See [**_Electronic Cats CLA_**](https://github.com/ElectronicCats/electroniccats-cla/blob/main/electroniccats-cla.md) for more information.
+Este es un proyecto de hardware abierto. Las contribuciones son bienvenidas:
 
-See the [**Community code of conduct**](https://github.com/ElectronicCats/electroniccats-cla/blob/main/electroniccats-community-code-of-conduct.md) for a vision of the community we want to build and what we expect from it.
+1. Haz un fork del repositorio.
+2. Crea una nueva rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Haz commit de tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Haz push a tu rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
 
-## License
+## 📝 Licencia
 
-Electronic Cats invests time and resources providing this open source design, please support Electronic Cats and open-source hardware by purchasing products from Electronic Cats!
+Este proyecto es de hardware abierto. Consulta los archivos de licencia para más detalles.
 
-Designed by Electronic Cats.
+## 🏢 Electronic Cats
 
-Firmware released under an MIT license. See the LICENSE file for more information.
+Desarollado con ❤️ por [Electronic Cats](https://www.electroniccats.com/)
 
-Electronic Cats is a registered trademark, please do not use if you sell these PCBs.
+<a href="https://github.com/sponsors/ElectronicCats">
+<img src="https://electroniccats.com/wp-content/uploads/2020/07/Badge_GHS.png" height="104" />
+</a>
 
-May 11 2026
+Electronic Cats invierte tiempo y recursos en proporcionar este diseño de hardware abierto.
+Por favor, apoya a Electronic Cats y al hardware abierto comprando productos de Electronic Cats.
 
+## 📞 Contacto y soporte 
+
+- **Website**: [https://www.electroniccats.com/](https://www.electroniccats.com/)
+- **GitHub**: [ElectronicCats](https://github.com/ElectronicCats)
+- **Issues**: Usa la sección de Issues en GitHub para reportar problemas o sugerir mejoras
+
+## 🙏 Agradecimientos
+
+Gracias a toda la comunidad de hardware abierto y a todas las personas que hacen posibles proyectos como este.
+---
